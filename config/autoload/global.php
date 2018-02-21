@@ -12,5 +12,21 @@
  */
 
 return [
-    // ...
+    'db'       => [
+        'driver'         => 'Pdo',
+        'dsn'            => 'mysql:dbname=zend;host=mysql',
+        'driver_options' => [
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'',
+        ],
+    ],
+    'doctrine' => [
+        'migrations_configuration' => [
+            'orm_default' => [
+                'directory' => 'data/Migrations',
+                'name'      => 'Doctrine Database Migrations',
+                'namespace' => 'Migrations',
+                'table'     => 'migrations',
+            ],
+        ],
+    ],
 ];

@@ -1,7 +1,28 @@
-zf:
-  build: .
-  dockerfile: Dockerfile
-  ports:
-   - "8080:80"
-  volumes:
-   - .:/var/www
+version: '2'
+services:
+  zf:
+    build: docker/zend-dev
+    ports:
+    - 15000:80
+    volumes:
+    - .:/var/www/html
+    links:
+    - mysql:mysql
+    - mailhog:mailhog
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+    - 15001:80
+    links:
+    - mysql:db
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+    - 15002:8025
+  mysql:
+    image: mysql
+    restart: always
+    volumes:
+    - ./data/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
