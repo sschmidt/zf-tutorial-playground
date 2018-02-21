@@ -3,7 +3,7 @@
 ## Getting started
 
 - Run: `docker-compose up`
-- Visit the demo page at `http://localhost:15000`
+- Visit the demo page at `http://localhost:15000`, album list at: `http://localhost:15000/album`
 - Find phpMyAdmin at `http://localhost:15001` (user: root, password: root)
 - Find maildog at `http://localhost:15002`
 
