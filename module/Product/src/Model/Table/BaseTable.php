@@ -1,25 +1,25 @@
 <?php
 
-namespace Album\Model;
+namespace Product\Model\Table;
 
 use RuntimeException;
-use Zend\Db\TableGateway\TableGatewayInterface;
+use Zend\Db\TableGateway\TableGateway;
 
 /**
- * Class AlbumTable
- *
- * @package Album\Model
+ * Class BaseTable
+ * @package Product\Model\Table
  */
-class AlbumTable
+abstract class BaseTable
 {
-    private $tableGateway;
+
+    protected $tableGateway;
 
     /**
-     * AlbumTable constructor.
+     * BaseTable constructor.
      *
-     * @param TableGatewayInterface $tableGateway
+     * @param TableGateway $tableGateway
      */
-    public function __construct(TableGatewayInterface $tableGateway)
+    public function __construct(TableGateway $tableGateway)
     {
         $this->tableGateway = $tableGateway;
     }
@@ -29,7 +29,7 @@ class AlbumTable
         return $this->tableGateway->select();
     }
 
-    public function getAlbum(int $id)
+    public function getById(int $id)
     {
         $rowset = $this->tableGateway->select(['id' => $id]);
         $row    = $rowset->current();
@@ -45,35 +45,28 @@ class AlbumTable
         return $row;
     }
 
-    public function saveAlbum(Album $album)
+    public function deleteById(int $id)
     {
-        $data = [
-            'artist' => $album->artist,
-            'title'  => $album->title,
-        ];
+        $this->tableGateway->delete(['id' => $id]);
+    }
 
-        $id = (int) $album->id;
-
+    protected function insertOrUpdate(int $id, array $data)
+    {
         if ($id === 0) {
             $this->tableGateway->insert($data);
 
             return;
         }
 
-        if (!$this->getAlbum($id)) {
+        if (!$this->getById($id)) {
             throw new RuntimeException(
                 sprintf(
-                    'Cannot update album with identifier %d; does not exist',
+                    'Cannot update model with identifier %d; does not exist',
                     $id
                 )
             );
         }
 
         $this->tableGateway->update($data, ['id' => $id]);
-    }
-
-    public function deleteAlbum(int $id)
-    {
-        $this->tableGateway->delete(['id' => $id]);
     }
 }

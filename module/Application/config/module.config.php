@@ -2,7 +2,7 @@
 
 namespace Application;
 
-use Album\Controller\AlbumController;
+use Product\Controller\HomeController;
 use Zend\Router\Http\Literal;
 use Zend\Router\Http\Segment;
 use Zend\ServiceManager\Factory\InvokableFactory;
@@ -15,7 +15,7 @@ return [
                 'options' => [
                     'route'    => '/',
                     'defaults' => [
-                        'controller' => AlbumController::class,
+                        'controller' => HomeController::class,
                         'action'     => 'index',
                     ],
                 ],
@@ -37,6 +37,28 @@ return [
             Controller\IndexController::class => InvokableFactory::class,
         ],
     ],
+
+    'navigation' => [
+        'default' => [
+            [
+                'label' => 'Home',
+                'route' => 'home',
+            ],
+            [
+                'label' => 'Albums',
+                'route' => 'album',
+            ],
+            [
+                'label' => 'Books',
+                'route' => 'book',
+            ],
+            [
+                'label' => 'Thriller',
+                'route' => 'thriller',
+            ],
+        ],
+    ],
+
     'view_manager' => [
         'display_not_found_reason' => true,
         'display_exceptions'       => true,

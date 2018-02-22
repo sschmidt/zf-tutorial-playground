@@ -1,0 +1,19 @@
+<?php
+$this->headTitle('Home');
+?>
+
+<?= $this->partial(
+    'product/album/index.phtml',
+    [
+        'albums' => $albums,
+    ]
+);
+?>
+
+<?= $this->partial(
+    'product/book/index.phtml',
+    [
+        'books' => $books,
+    ]
+);
+?>

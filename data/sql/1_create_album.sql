@@ -1,24 +1,14 @@
-CREATE DATABASE `zend`
-  CHARACTER SET utf8
-  COLLATE utf8_general_ci;
-
-USE `zend`;
+use `zend`;
 
 CREATE TABLE `album` (
-  `id`     INT(11)      NOT NULL,
+  `id`     INT(13)      UNSIGNED NOT NULL AUTO_INCREMENT,
   `artist` VARCHAR(100) NOT NULL,
-  `title`  VARCHAR(100) NOT NULL
+  `title`  VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = UTF8;
 
-ALTER TABLE `album`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `album`
-  MODIFY `id` INT(11) NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 1;
-COMMIT;
 
 INSERT INTO `album` (`id`, `artist`, `title`) VALUES
   (1, 'The Military Wives', 'In My Dreams'),

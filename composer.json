@@ -21,13 +21,13 @@
   "autoload": {
     "psr-4": {
       "Application\\": "module/Application/src/",
-      "Album\\": "module/Album/src/"
+      "Product\\": "module/Product/src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
       "ApplicationTest\\": "module/Application/test/",
-      "AlbumTest\\": "module/Album/src/test"
+      "ProductTest\\": "module/Product/src/test"
     }
   },
   "extra": [],

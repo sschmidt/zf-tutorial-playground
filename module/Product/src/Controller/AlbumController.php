@@ -1,17 +1,17 @@
 <?php
 
-namespace Album\Controller;
+namespace Product\Controller;
 
-use Album\Form\AlbumForm;
-use Album\Model\Album;
-use Album\Model\AlbumTable;
+use Product\Form\AlbumForm;
+use Product\Model\Album;
+use Product\Model\Table\AlbumTable;
 use Zend\View\Model\ViewModel;
 use Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * Class AlbumController
  *
- * @package Album\Controller
+ * @package Product\Controller
  */
 class AlbumController extends AbstractActionController
 {
@@ -73,7 +73,7 @@ class AlbumController extends AbstractActionController
         }
 
         try {
-            $album = $this->table->getAlbum($id);
+            $album = $this->table->getById($id);
         } catch (\Exception $e) {
             return $this->redirect()->toRoute('album', ['action' => 'index']);
         }
@@ -115,7 +115,7 @@ class AlbumController extends AbstractActionController
 
             if ($del == 'Yes') {
                 $id = (int) $request->getPost('id');
-                $this->table->deleteAlbum($id);
+                $this->table->deleteById($id);
             }
 
             // Redirect to list of albums
@@ -124,7 +124,7 @@ class AlbumController extends AbstractActionController
 
         return [
             'id'    => $id,
-            'album' => $this->table->getAlbum($id),
+            'album' => $this->table->getById($id),
         ];
     }
 

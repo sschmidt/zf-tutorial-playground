@@ -1,15 +1,25 @@
 <?php
 
-namespace Album\Form;
+namespace Product\Form;
 
 use Zend\Form\Form;
 
-class AlbumForm extends Form
+/**
+ * Class ProductForm
+ *
+ * @package Product\Form
+ */
+abstract class ProductForm extends Form
 {
-    public function __construct($name = null)
+
+    /**
+     * ProductForm constructor.
+     *
+     * @param string|null $name
+     */
+    public function __construct(string $name = null)
     {
-        // We will ignore the name provided to the constructor
-        parent::__construct('album');
+        parent::__construct($name);
 
         $this->add(
             [
@@ -23,15 +33,6 @@ class AlbumForm extends Form
                 'type'    => 'text',
                 'options' => [
                     'label' => 'Title',
-                ],
-            ]
-        );
-        $this->add(
-            [
-                'name'    => 'artist',
-                'type'    => 'text',
-                'options' => [
-                    'label' => 'Artist',
                 ],
             ]
         );

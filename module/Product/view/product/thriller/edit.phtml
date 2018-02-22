@@ -1,0 +1,67 @@
+<?php
+$title = 'Edit thriller';
+$this->headTitle($title);
+?>
+    <h1><?= $this->escapeHtml($title) ?></h1>
+<?php
+$thriller = $form->get('title');
+$thriller->setAttribute('class', 'form-control');
+$thriller->setAttribute('placeholder', 'thriller title');
+
+$author = $form->get('author');
+$author->setAttribute('class', 'form-control');
+$author->setAttribute('placeholder', 'Author');
+
+$isbn = $form->get('isbn');
+$isbn->setAttribute('class', 'form-control');
+$isbn->setAttribute('placeholder', 'ISBN-13');
+
+$excitement_factor = $form->get('excitement_factor');
+$excitement_factor->setAttribute('class', 'form-control');
+$excitement_factor->setAttribute('placeholder', 'Excitement Factor');
+
+$submit = $form->get('submit');
+$submit->setAttribute('class', 'btn btn-primary');
+
+$form->setAttribute(
+    'action',
+    $this->url(
+        'thriller',
+        [
+            'action' => 'edit',
+            'id'     => $id,
+        ]
+    )
+);
+$form->prepare();
+
+echo $this->form()->openTag($form);
+?>
+    <div class="form-group">
+        <?= $this->formLabel($thriller) ?>
+        <?= $this->formElement($thriller) ?>
+        <?= $this->formElementErrors()->render($thriller, ['class' => 'help-block']) ?>
+    </div>
+
+    <div class="form-group">
+        <?= $this->formLabel($author) ?>
+        <?= $this->formElement($author) ?>
+        <?= $this->formElementErrors()->render($author, ['class' => 'help-block']) ?>
+    </div>
+
+    <div class="form-group">
+        <?= $this->formLabel($isbn) ?>
+        <?= $this->formElement($isbn) ?>
+        <?= $this->formElementErrors()->render($isbn, ['class' => 'help-block']) ?>
+    </div>
+
+    <div class="form-group">
+        <?= $this->formLabel($excitement_factor) ?>
+        <?= $this->formElement($excitement_factor) ?>
+        <?= $this->formElementErrors()->render($excitement_factor, ['class' => 'help-block']) ?>
+    </div>
+<?php
+echo $this->formSubmit($submit);
+echo $this->formHidden($form->get('id'));
+echo $this->formHidden($form->get('book_id'));
+echo $this->form()->closeTag();

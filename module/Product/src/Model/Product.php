@@ -1,6 +1,6 @@
 <?php
 
-namespace Album\Model;
+namespace Product\Model;
 
 use DomainException;
 use Zend\Filter\StringTrim;
@@ -11,23 +11,30 @@ use Zend\InputFilter\InputFilterInterface;
 use Zend\Validator\StringLength;
 
 /**
- * Class Album
- * @package Album\Model
+ * Class Product
+ *
+ * @package Product\Model
  */
-class Album
+abstract class Product
 {
+    /**
+     * @var int
+     */
     public $id;
-    public $artist;
+
+    /**
+     * @var string
+     */
     public $title;
-    private $inputFilter;
 
-    public function exchangeArray(array $data)
-    {
-        $this->id     = $data['id'] ?? null;
-        $this->artist = $data['artist'] ?? null;
-        $this->title  = $data['title'] ?? null;
-    }
+    /**
+     * @var InputFilter
+     */
+    protected $inputFilter;
 
+    /**
+     * @param InputFilterInterface $inputFilter
+     */
     public function setInputFilter(InputFilterInterface $inputFilter)
     {
         throw new DomainException(
@@ -38,7 +45,10 @@ class Album
         );
     }
 
-    public function getInputFilter()
+    /**
+     * @return InputFilter
+     */
+    protected function getInputFilter()
     {
         if ($this->inputFilter) {
             return $this->inputFilter;
@@ -52,27 +62,6 @@ class Album
                 'required' => true,
                 'filters'  => [
                     ['name' => ToInt::class],
-                ],
-            ]
-        );
-
-        $inputFilter->add(
-            [
-                'name'       => 'artist',
-                'required'   => true,
-                'filters'    => [
-                    ['name' => StripTags::class],
-                    ['name' => StringTrim::class],
-                ],
-                'validators' => [
-                    [
-                        'name'    => StringLength::class,
-                        'options' => [
-                            'encoding' => 'UTF-8',
-                            'min'      => 1,
-                            'max'      => 100,
-                        ],
-                    ],
                 ],
             ]
         );
@@ -102,14 +91,4 @@ class Album
 
         return $this->inputFilter;
     }
-
-    public function getArrayCopy()
-    {
-        return [
-            'id'     => $this->id,
-            'artist' => $this->artist,
-            'title'  => $this->title,
-        ];
-    }
-
 }
