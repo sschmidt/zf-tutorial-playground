@@ -2,6 +2,11 @@
 
 namespace Product\Form;
 
+use Zend\Filter\StringTrim;
+use Zend\Filter\StripTags;
+use Zend\InputFilter\InputFilter;
+use Zend\Validator\StringLength;
+
 /**
  * Class AlbumForm
  *
@@ -28,4 +33,36 @@ final class AlbumForm extends ProductForm
             ]
         );
     }
+
+    /**
+     * @return InputFilter
+     */
+    public function getInputFilter()
+    {
+        $inputFilter = parent::getInputFilter();
+
+        $inputFilter->add(
+            [
+                'name'       => 'artist',
+                'required'   => true,
+                'filters'    => [
+                    ['name' => StripTags::class],
+                    ['name' => StringTrim::class],
+                ],
+                'validators' => [
+                    [
+                        'name'    => StringLength::class,
+                        'options' => [
+                            'encoding' => 'UTF-8',
+                            'min'      => 1,
+                            'max'      => 100,
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        return $inputFilter;
+    }
+
 }

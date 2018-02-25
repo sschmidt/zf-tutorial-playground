@@ -30,37 +30,6 @@ class Album extends Product
     }
 
     /**
-     * @return InputFilter
-     */
-    public function getInputFilter()
-    {
-        $inputFilter = parent::getInputFilter();
-
-        $inputFilter->add(
-            [
-                'name'       => 'artist',
-                'required'   => true,
-                'filters'    => [
-                    ['name' => StripTags::class],
-                    ['name' => StringTrim::class],
-                ],
-                'validators' => [
-                    [
-                        'name'    => StringLength::class,
-                        'options' => [
-                            'encoding' => 'UTF-8',
-                            'min'      => 1,
-                            'max'      => 100,
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        return $inputFilter;
-    }
-
-    /**
      * @return string[]
      */
     public function getArrayCopy()

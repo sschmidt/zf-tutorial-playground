@@ -2,6 +2,11 @@
 
 namespace Product\Form;
 
+use Zend\Filter\StringTrim;
+use Zend\Filter\StripTags;
+use Zend\InputFilter\InputFilter;
+use Zend\Validator\StringLength;
+
 /**
  * Class ThrillerForm
  *
@@ -36,4 +41,38 @@ class ThrillerForm extends BookForm
             ]
         );
     }
+
+    /**
+     * @return InputFilter
+     */
+    public function getInputFilter()
+    {
+        $inputFilter = parent::getInputFilter();
+
+        $inputFilter->add(
+            [
+                'name'       => 'excitement_factor',
+                'required'   => true,
+                'filters'    => [
+                    ['name' => StripTags::class],
+                    ['name' => StringTrim::class],
+                ],
+                'validators' => [
+                    [
+                        'name'    => StringLength::class,
+                        'options' => [
+                            'encoding' => 'UTF-8',
+                            'min'      => 1,
+                            'max'      => 100,
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $inputFilter->replace($this->getIsbnFilter('book_id'), 'isbn');
+
+        return $inputFilter;
+    }
+
 }

@@ -55,7 +55,6 @@ class BookController extends AbstractActionController
         }
 
         $book = new Book();
-        $form->setInputFilter($book->getInputFilter());
         $form->setData($request->getPost());
 
         if (!$form->isValid()) {
@@ -93,7 +92,6 @@ class BookController extends AbstractActionController
             return $viewData;
         }
 
-        $form->setInputFilter($book->getInputFilter());
         $form->setData($request->getPost());
 
         if (!$form->isValid()) {

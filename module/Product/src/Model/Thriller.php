@@ -2,11 +2,6 @@
 
 namespace Product\Model;
 
-use Zend\Filter\StringTrim;
-use Zend\Filter\StripTags;
-use Zend\InputFilter\InputFilter;
-use Zend\Validator\StringLength;
-
 /**
  * Class Thriller
  *
@@ -35,39 +30,6 @@ class Thriller extends Book
         $this->isbn              = $data['isbn'] ?? null;
         $this->excitement_factor = $data['excitement_factor'] ?? null;
         $this->book_id           = $data['book_id'] ?? null;
-    }
-
-    /**
-     * @return InputFilter
-     */
-    public function getInputFilter()
-    {
-        $inputFilter = parent::getInputFilter();
-
-        $inputFilter->add(
-            [
-                'name'       => 'excitement_factor',
-                'required'   => true,
-                'filters'    => [
-                    ['name' => StripTags::class],
-                    ['name' => StringTrim::class],
-                ],
-                'validators' => [
-                    [
-                        'name'    => StringLength::class,
-                        'options' => [
-                            'encoding' => 'UTF-8',
-                            'min'      => 1,
-                            'max'      => 100,
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        $inputFilter->replace($this->getIsbnFilter('book_id'), 'isbn');
-
-        return $inputFilter;
     }
 
     /**

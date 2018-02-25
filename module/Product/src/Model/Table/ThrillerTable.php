@@ -56,9 +56,11 @@ class ThrillerTable extends BookTable
         }
     }
 
+    /**
+     * @param int $id
+     */
     public function deleteById(int $id)
     {
         $this->tableGateway->delete(['id' => $id]);
     }
-
 }

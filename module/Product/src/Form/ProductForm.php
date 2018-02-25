@@ -2,7 +2,12 @@
 
 namespace Product\Form;
 
+use Zend\Filter\StringTrim;
+use Zend\Filter\StripTags;
+use Zend\Filter\ToInt;
 use Zend\Form\Form;
+use Zend\InputFilter\InputFilter;
+use Zend\Validator\StringLength;
 
 /**
  * Class ProductForm
@@ -11,6 +16,11 @@ use Zend\Form\Form;
  */
 abstract class ProductForm extends Form
 {
+
+    /**
+     * @var InputFilter
+     */
+    private $inputFilter;
 
     /**
      * ProductForm constructor.
@@ -46,5 +56,52 @@ abstract class ProductForm extends Form
                 ],
             ]
         );
+    }
+
+    /**
+     * @return InputFilter
+     */
+    public function getInputFilter()
+    {
+        if ($this->inputFilter) {
+            return $this->inputFilter;
+        }
+
+        $inputFilter = new InputFilter();
+
+        $inputFilter->add(
+            [
+                'name'     => 'id',
+                'required' => true,
+                'filters'  => [
+                    ['name' => ToInt::class],
+                ],
+            ]
+        );
+
+        $inputFilter->add(
+            [
+                'name'       => 'title',
+                'required'   => true,
+                'filters'    => [
+                    ['name' => StripTags::class],
+                    ['name' => StringTrim::class],
+                ],
+                'validators' => [
+                    [
+                        'name'    => StringLength::class,
+                        'options' => [
+                            'encoding' => 'UTF-8',
+                            'min'      => 1,
+                            'max'      => 100,
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $this->inputFilter = $inputFilter;
+
+        return $this->inputFilter;
     }
 }

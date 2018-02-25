@@ -51,7 +51,6 @@ class AlbumController extends AbstractActionController
         }
 
         $album = new Album();
-        $form->setInputFilter($album->getInputFilter());
         $form->setData($request->getPost());
 
         if (!$form->isValid()) {
@@ -89,7 +88,6 @@ class AlbumController extends AbstractActionController
             return $viewData;
         }
 
-        $form->setInputFilter($album->getInputFilter());
         $form->setData($request->getPost());
 
         if (!$form->isValid()) {

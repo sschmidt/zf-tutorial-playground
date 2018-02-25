@@ -3,6 +3,7 @@
 namespace Product\Model\Table;
 
 use RuntimeException;
+use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
 /**
@@ -24,11 +25,19 @@ abstract class BaseTable
         $this->tableGateway = $tableGateway;
     }
 
+    /**
+     * @return ResultSet
+     */
     public function fetchAll()
     {
         return $this->tableGateway->select();
     }
 
+    /**
+     * @param int $id
+     *
+     * @return array|\ArrayObject|null
+     */
     public function getById(int $id)
     {
         $rowset = $this->tableGateway->select(['id' => $id]);
@@ -45,11 +54,18 @@ abstract class BaseTable
         return $row;
     }
 
+    /**
+     * @param int $id
+     */
     public function deleteById(int $id)
     {
         $this->tableGateway->delete(['id' => $id]);
     }
 
+    /**
+     * @param int   $id
+     * @param array $data
+     */
     protected function insertOrUpdate(int $id, array $data)
     {
         if ($id === 0) {

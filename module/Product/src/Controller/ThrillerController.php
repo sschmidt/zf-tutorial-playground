@@ -16,7 +16,6 @@ use Zend\View\Model\ViewModel;
  */
 class ThrillerController extends AbstractActionController
 {
-
     /**
      * @var ThrillerTable
      */
@@ -63,7 +62,6 @@ class ThrillerController extends AbstractActionController
         }
 
         $thriller = new Thriller();
-        $form->setInputFilter($thriller->getInputFilter());
         $form->setData($request->getPost());
 
         if (!$form->isValid()) {
@@ -101,7 +99,6 @@ class ThrillerController extends AbstractActionController
             return $viewData;
         }
 
-        $form->setInputFilter($thriller->getInputFilter());
         $form->setData($request->getPost());
 
         if (!$form->isValid()) {
