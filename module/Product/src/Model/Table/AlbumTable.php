@@ -13,16 +13,6 @@ use Zend\Db\TableGateway\TableGateway;
 class AlbumTable extends BaseTable
 {
     /**
-     * AlbumTable constructor.
-     *
-     * @param TableGateway $tableGateway
-     */
-    public function __construct(TableGateway $tableGateway)
-    {
-        parent::__construct($tableGateway);
-    }
-
-    /**
      * @param Album $album
      */
     public function saveAlbum(Album $album)

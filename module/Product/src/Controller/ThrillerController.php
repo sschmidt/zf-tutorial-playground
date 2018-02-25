@@ -2,11 +2,8 @@
 
 namespace Product\Controller;
 
-use Product\Form\ThrillerForm;
-use Product\Model\Table\BookTable;
-use Product\Model\Thriller;
-use Product\Model\Table\ThrillerTable;
-use Zend\Mvc\Controller\AbstractActionController;
+use Product\Service\ThrillerManagementService;
+use Zend\Http\Response;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -14,28 +11,21 @@ use Zend\View\Model\ViewModel;
  *
  * @package Product\Controller
  */
-class ThrillerController extends AbstractActionController
+class ThrillerController extends BaseController
 {
     /**
-     * @var ThrillerTable
+     * @var ThrillerManagementService
      */
-    private $thrillerTable;
-
-    /**
-     * @var BookTable
-     */
-    private $bookTable;
+    private $thrillerManagementService;
 
     /**
      * ThrillerController constructor.
      *
-     * @param ThrillerTable $thrillerTable
-     * @param BookTable     $bookTable
+     * @param ThrillerManagementService $thrillerManagementService
      */
-    public function __construct(ThrillerTable $thrillerTable, BookTable $bookTable)
+    public function __construct(ThrillerManagementService $thrillerManagementService)
     {
-        $this->thrillerTable = $thrillerTable;
-        $this->bookTable     = $bookTable;
+        $this->thrillerManagementService = $thrillerManagementService;
     }
 
     /**
@@ -45,35 +35,30 @@ class ThrillerController extends AbstractActionController
     {
         return new ViewModel(
             [
-                'thrillers' => $this->thrillerTable->fetchAll(),
+                'thrillers' => $this->thrillerManagementService->fetchAll(),
             ]
         );
     }
 
+    /**
+     * @return array|Response
+     */
     public function addAction()
     {
-        $form = new ThrillerForm();
-        $form->get('submit')->setValue('Add');
+        $form = $this->thrillerManagementService->createForm();
 
-        $request = $this->getRequest();
-
-        if (!$request->isPost()) {
+        if (!$this->bindAndValidateForm($form)) {
             return ['form' => $form];
         }
 
-        $thriller = new Thriller();
-        $form->setData($request->getPost());
-
-        if (!$form->isValid()) {
-            return ['form' => $form];
-        }
-
-        $thriller->exchangeArray($form->getData());
-        $this->thrillerTable->saveThriller($thriller);
+        $this->thrillerManagementService->createThriller($form);
 
         return $this->redirect()->toRoute('thriller');
     }
 
+    /**
+     * @return array|Response
+     */
     public function editAction()
     {
         $id = (int) $this->params()->fromRoute('id', 0);
@@ -82,35 +67,23 @@ class ThrillerController extends AbstractActionController
             return $this->redirect()->toRoute('thriller', ['action' => 'add']);
         }
 
-        try {
-            $thriller = $this->thrillerTable->getById($id);
-        } catch (\Exception $e) {
+        $form = $this->thrillerManagementService->editForm($id);
+        if (!$form) {
             return $this->redirect()->toRoute('thriller', ['action' => 'index']);
         }
 
-        $form = new ThrillerForm();
-        $form->bind($thriller);
-        $form->get('submit')->setAttribute('value', 'Edit');
-
-        $request  = $this->getRequest();
-        $viewData = ['id' => $id, 'form' => $form];
-
-        if (!$request->isPost()) {
-            return $viewData;
+        if (!$this->bindAndValidateForm($form)) {
+            return ['form' => $form, 'id' => $id];
         }
 
-        $form->setData($request->getPost());
+        $this->thrillerManagementService->updateThriller($form);
 
-        if (!$form->isValid()) {
-            return $viewData;
-        }
-
-        $this->thrillerTable->saveThriller($thriller);
-
-        // Redirect to thriller list
         return $this->redirect()->toRoute('thriller', ['action' => 'index']);
     }
 
+    /**
+     * @return array|Response
+     */
     public function deleteAction()
     {
         $id = (int) $this->params()->fromRoute('id', 0);
@@ -118,22 +91,20 @@ class ThrillerController extends AbstractActionController
             return $this->redirect()->toRoute('thriller');
         }
 
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $del = $request->getPost('del', 'No');
-
-            if ($del == 'Yes') {
-                $id       = (int) $request->getPost('id');
-                $thriller = $this->thrillerTable->getById($id);
-                $this->bookTable->deleteById($thriller->book_id);
+        $success = $this->handleDeleteConfirmation(
+            function ($id) {
+                $thriller = $this->thrillerManagementService->getById($id);
+                $this->thrillerManagementService->deleteByBookId($thriller->book_id);
             }
+        );
 
+        if ($success) {
             return $this->redirect()->toRoute('thriller');
         }
 
         return [
             'id'       => $id,
-            'thriller' => $this->thrillerTable->getById($id),
+            'thriller' => $this->thrillerManagementService->getById($id),
         ];
     }
 }

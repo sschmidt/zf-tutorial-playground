@@ -3,7 +3,6 @@
 namespace Product\Model\Table;
 
 use Product\Model\Thriller;
-use Zend\Db\TableGateway\TableGateway;
 
 /**
  * Class ThrillerTable
@@ -12,16 +11,6 @@ use Zend\Db\TableGateway\TableGateway;
  */
 class ThrillerTable extends BookTable
 {
-    /**
-     * ThrillerTable constructor.
-     *
-     * @param TableGateway $tableGateway
-     */
-    public function __construct(TableGateway $tableGateway)
-    {
-        parent::__construct($tableGateway);
-    }
-
     /**
      * @param Thriller $thriller
      */
@@ -54,13 +43,5 @@ class ThrillerTable extends BookTable
             ];
             $this->tableGateway->insert($thrillerData);
         }
-    }
-
-    /**
-     * @param int $id
-     */
-    public function deleteById(int $id)
-    {
-        $this->tableGateway->delete(['id' => $id]);
     }
 }

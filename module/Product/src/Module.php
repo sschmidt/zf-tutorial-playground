@@ -29,36 +29,52 @@ class Module implements ConfigProviderInterface
     {
         return [
             'factories' => [
-                Model\Table\AlbumTable::class     => function ($container) {
+                Service\AlbumManagementService::class    => function ($container) {
+                    $albumTable = $container->get(Model\Table\AlbumTable::class);
+
+                    return new Service\AlbumManagementService($albumTable);
+                },
+                Service\BookManagementService::class     => function ($container) {
+                    $bookTable = $container->get(Model\Table\BookTable::class);
+
+                    return new Service\BookManagementService($bookTable);
+                },
+                Service\ThrillerManagementService::class => function ($container) {
+                    $bookTable     = $container->get(Model\Table\BookTable::class);
+                    $thrillerTable = $container->get(Model\Table\ThrillerTable::class);
+
+                    return new Service\ThrillerManagementService($thrillerTable, $bookTable);
+                },
+                Model\Table\AlbumTable::class            => function ($container) {
                     $tableGateway = $container->get(Model\AlbumTableGateway::class);
 
                     return new Model\Table\AlbumTable($tableGateway);
                 },
-                Model\AlbumTableGateway::class    => function ($container) {
+                Model\AlbumTableGateway::class           => function ($container) {
                     $dbAdapter          = $container->get(AdapterInterface::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Model\Album());
 
                     return new TableGateway('album', $dbAdapter, null, $resultSetPrototype);
                 },
-                Model\Table\BookTable::class      => function ($container) {
+                Model\Table\BookTable::class             => function ($container) {
                     $tableGateway = $container->get(Model\BookTableGateway::class);
 
                     return new Model\Table\BookTable($tableGateway);
                 },
-                Model\BookTableGateway::class     => function ($container) {
+                Model\BookTableGateway::class            => function ($container) {
                     $dbAdapter          = $container->get(AdapterInterface::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Model\Book());
 
                     return new TableGateway('book', $dbAdapter, null, $resultSetPrototype);
                 },
-                Model\Table\ThrillerTable::class  => function ($container) {
+                Model\Table\ThrillerTable::class         => function ($container) {
                     $tableGateway = $container->get(Model\ThrillerTableGateway::class);
 
                     return new Model\Table\ThrillerTable($tableGateway);
                 },
-                Model\ThrillerTableGateway::class => function ($container) {
+                Model\ThrillerTableGateway::class        => function ($container) {
                     $dbAdapter          = $container->get(AdapterInterface::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Model\Thriller());
@@ -75,7 +91,7 @@ class Module implements ConfigProviderInterface
             'factories' => [
                 Controller\AlbumController::class    => function ($container) {
                     return new Controller\AlbumController(
-                        $container->get(Model\Table\AlbumTable::class)
+                        $container->get(Service\AlbumManagementService::class)
                     );
                 },
                 Controller\HomeController::class     => function ($container) {
@@ -86,13 +102,12 @@ class Module implements ConfigProviderInterface
                 },
                 Controller\BookController::class     => function ($container) {
                     return new Controller\BookController(
-                        $container->get(Model\Table\BookTable::class)
+                        $container->get(Service\BookManagementService::class)
                     );
                 },
                 Controller\ThrillerController::class => function ($container) {
                     return new Controller\ThrillerController(
-                        $container->get(Model\Table\ThrillerTable::class),
-                        $container->get(Model\Table\BookTable::class)
+                        $container->get(Service\ThrillerManagementService::class)
                     );
                 },
             ],

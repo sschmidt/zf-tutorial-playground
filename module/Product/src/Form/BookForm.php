@@ -2,12 +2,13 @@
 
 namespace Product\Form;
 
+use Application\Validator\NoRecordExists;
 use Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 use Zend\Filter\StringTrim;
 use Zend\Filter\StripTags;
 use Zend\InputFilter\InputFilter;
 use Zend\Validator\Between;
-use Zend\Validator\Db\NoRecordExists;
+use Zend\Validator\Isbn;
 use Zend\Validator\StringLength;
 
 /**
@@ -38,14 +39,10 @@ class BookForm extends ProductForm
 
         $this->add(
             [
-                'name'       => 'isbn',
-                'type'       => 'number',
-                'options'    => [
+                'name'    => 'isbn',
+                'type'    => 'number',
+                'options' => [
                     'label' => 'ISBN-13',
-                ],
-                'attributes' => [
-                    'min' => 9780000000000,
-                    'max' => 9999999999999,
                 ],
             ]
         );
@@ -55,6 +52,52 @@ class BookForm extends ProductForm
      * @return InputFilter
      */
     public function getInputFilter()
+    {
+        $inputFilter = $this->getBookBaseInputFilter();
+
+        $inputFilter->add($this->getIsbnFilter('id'));
+
+        return $inputFilter;
+    }
+
+    /**
+     * @param string $excludedId
+     *
+     * @return string[]
+     */
+    protected function getIsbnFilter(string $excludedId)
+    {
+        return [
+            'name'       => 'isbn',
+            'required'   => false,
+            'validators' => [
+                [
+                    'name'    => Isbn::class,
+                    'options' => [
+                        'min' => 9780000000000,
+                        'max' => 9999999999999,
+                    ],
+                ],
+                [
+                    'name'    => NoRecordExists::class,
+                    'options' => [
+                        'table'   => 'book',
+                        'field'   => 'isbn',
+                        'adapter' => GlobalAdapterFeature::getStaticAdapter(),
+                        'exclude' => [
+                            'field'     => 'id',
+                            'formValue' => $excludedId,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return InputFilter
+     */
+    protected function getBookBaseInputFilter(): InputFilter
     {
         $inputFilter = parent::getInputFilter();
 
@@ -79,42 +122,6 @@ class BookForm extends ProductForm
             ]
         );
 
-        $inputFilter->add($this->getIsbnFilter('id'));
-
         return $inputFilter;
-    }
-
-    /**
-     * @param string $excludedId
-     *
-     * @return string[]
-     */
-    protected function getIsbnFilter(string $excludedId)
-    {
-        return [
-            'name'       => 'isbn',
-            'required'   => false,
-            'validators' => [
-                [
-                    'name'    => Between::class,
-                    'options' => [
-                        'min' => 9780000000000,
-                        'max' => 9999999999999,
-                    ],
-                ],
-                [
-                    'name'    => NoRecordExists::class,
-                    'options' => [
-                        'table'   => 'book',
-                        'field'   => 'isbn',
-                        'adapter' => GlobalAdapterFeature::getStaticAdapter(),
-                        'exclude' => [
-                            'field'     => 'id',
-                            'formValue' => $excludedId,
-                        ],
-                    ],
-                ],
-            ],
-        ];
     }
 }

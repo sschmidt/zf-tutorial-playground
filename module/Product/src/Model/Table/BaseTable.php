@@ -3,16 +3,20 @@
 namespace Product\Model\Table;
 
 use RuntimeException;
+use Zend\Db\Exception\InvalidArgumentException;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
 /**
  * Class BaseTable
+ *
  * @package Product\Model\Table
  */
-abstract class BaseTable
+abstract class BaseTable implements CrudTable
 {
-
+    /**
+     * @var TableGateway
+     */
     protected $tableGateway;
 
     /**
@@ -43,7 +47,7 @@ abstract class BaseTable
         $rowset = $this->tableGateway->select(['id' => $id]);
         $row    = $rowset->current();
         if (!$row) {
-            throw new RuntimeException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'Could not find row with identifier %d',
                     $id

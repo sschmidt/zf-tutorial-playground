@@ -12,6 +12,9 @@ use Zend\View\Model\ViewModel;
  */
 class IndexController extends AbstractActionController
 {
+    /**
+     * @return ViewModel
+     */
     public function indexAction()
     {
         return new ViewModel();

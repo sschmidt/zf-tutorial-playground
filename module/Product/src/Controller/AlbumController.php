@@ -2,29 +2,31 @@
 
 namespace Product\Controller;
 
-use Product\Form\AlbumForm;
-use Product\Model\Album;
-use Product\Model\Table\AlbumTable;
+use Product\Service\AlbumManagementService;
+use Product\Service\BookManagementService;
+use Zend\Http\Response;
 use Zend\View\Model\ViewModel;
-use Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * Class AlbumController
  *
  * @package Product\Controller
  */
-class AlbumController extends AbstractActionController
+class AlbumController extends BaseController
 {
-    private $table;
+    /**
+     * @var BookManagementService
+     */
+    private $albumManagementService;
 
     /**
      * AlbumController constructor.
      *
-     * @param AlbumTable $table
+     * @param AlbumManagementService $albumManagementService
      */
-    public function __construct(AlbumTable $table)
+    public function __construct(AlbumManagementService $albumManagementService)
     {
-        $this->table = $table;
+        $this->albumManagementService = $albumManagementService;
     }
 
     /**
@@ -34,35 +36,30 @@ class AlbumController extends AbstractActionController
     {
         return new ViewModel(
             [
-                'albums' => $this->table->fetchAll(),
+                'albums' => $this->albumManagementService->fetchAll(),
             ]
         );
     }
 
+    /**
+     * @return array|Response
+     */
     public function addAction()
     {
-        $form = new AlbumForm();
-        $form->get('submit')->setValue('Add');
+        $form = $this->albumManagementService->createForm();
 
-        $request = $this->getRequest();
-
-        if (!$request->isPost()) {
+        if (!$this->bindAndValidateForm($form)) {
             return ['form' => $form];
         }
 
-        $album = new Album();
-        $form->setData($request->getPost());
-
-        if (!$form->isValid()) {
-            return ['form' => $form];
-        }
-
-        $album->exchangeArray($form->getData());
-        $this->table->saveAlbum($album);
+        $this->albumManagementService->createAlbum($form);
 
         return $this->redirect()->toRoute('album');
     }
 
+    /**
+     * @return array|Response
+     */
     public function editAction()
     {
         $id = (int) $this->params()->fromRoute('id', 0);
@@ -71,35 +68,23 @@ class AlbumController extends AbstractActionController
             return $this->redirect()->toRoute('album', ['action' => 'add']);
         }
 
-        try {
-            $album = $this->table->getById($id);
-        } catch (\Exception $e) {
+        $form = $this->albumManagementService->editForm($id);
+        if (!$form) {
             return $this->redirect()->toRoute('album', ['action' => 'index']);
         }
 
-        $form = new AlbumForm();
-        $form->bind($album);
-        $form->get('submit')->setAttribute('value', 'Edit');
-
-        $request  = $this->getRequest();
-        $viewData = ['id' => $id, 'form' => $form];
-
-        if (!$request->isPost()) {
-            return $viewData;
+        if (!$this->bindAndValidateForm($form)) {
+            return ['form' => $form, 'id' => $id];
         }
 
-        $form->setData($request->getPost());
+        $this->albumManagementService->updateAlbum($form);
 
-        if (!$form->isValid()) {
-            return $viewData;
-        }
-
-        $this->table->saveAlbum($album);
-
-        // Redirect to album list
         return $this->redirect()->toRoute('album', ['action' => 'index']);
     }
 
+    /**
+     * @return array|Response
+     */
     public function deleteAction()
     {
         $id = (int) $this->params()->fromRoute('id', 0);
@@ -107,23 +92,19 @@ class AlbumController extends AbstractActionController
             return $this->redirect()->toRoute('album');
         }
 
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $del = $request->getPost('del', 'No');
-
-            if ($del == 'Yes') {
-                $id = (int) $request->getPost('id');
-                $this->table->deleteById($id);
+        $success = $this->handleDeleteConfirmation(
+            function ($id) {
+                $this->albumManagementService->deleteById($id);
             }
+        );
 
-            // Redirect to list of albums
+        if ($success) {
             return $this->redirect()->toRoute('album');
         }
 
         return [
             'id'    => $id,
-            'album' => $this->table->getById($id),
+            'album' => $this->albumManagementService->getById($id),
         ];
     }
-
 }

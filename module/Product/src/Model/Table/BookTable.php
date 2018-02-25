@@ -3,7 +3,6 @@
 namespace Product\Model\Table;
 
 use Product\Model\Book;
-use Zend\Db\TableGateway\TableGateway;
 
 /**
  * Class BookTable
@@ -12,16 +11,6 @@ use Zend\Db\TableGateway\TableGateway;
  */
 class BookTable extends BaseTable
 {
-    /**
-     * BookTable constructor.
-     *
-     * @param TableGateway $tableGateway
-     */
-    public function __construct(TableGateway $tableGateway)
-    {
-        parent::__construct($tableGateway);
-    }
-
     /**
      * @param Book $book
      */

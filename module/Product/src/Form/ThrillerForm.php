@@ -47,7 +47,7 @@ class ThrillerForm extends BookForm
      */
     public function getInputFilter()
     {
-        $inputFilter = parent::getInputFilter();
+        $inputFilter = parent::getBookBaseInputFilter();
 
         $inputFilter->add(
             [
@@ -70,7 +70,7 @@ class ThrillerForm extends BookForm
             ]
         );
 
-        $inputFilter->replace($this->getIsbnFilter('book_id'), 'isbn');
+        $inputFilter->add($this->getIsbnFilter('book_id'));
 
         return $inputFilter;
     }
