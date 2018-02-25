@@ -3,7 +3,8 @@ services:
   zf:
     build: docker/zend-dev
     ports:
-    - 15000:80
+    - 15003:443
+    - 15000:81
     volumes:
     - .:/var/www/html
     links:
